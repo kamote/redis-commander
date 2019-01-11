@@ -4,6 +4,7 @@
   <button id="vieModeEditButton" class="btn" style="display: none;" onclick="onModeEditButtonClick()">View mode edit</button>
   <button id="vieModeTreeButton" class="btn" onclick="onModeTreeButtonClick()">View mode tree</button>
   <button id="copyTextButton" class="btn" data-clipboard-target="#stringValue">Copy Text</button>
+  <button id="toggleCompressButton" class="btn">Toggle Compress</button>
 </div>
 <div id="itemData">
   <label>Key: <b><%= key %></b></label>
@@ -51,5 +52,30 @@
       } catch (err) {
           $('#jqtree_string_div').text('Text is no valid JSON: ' + err.message);
       }
+  });
+
+  var toggleOrigValue;
+  /**
+   * Show export form.
+   */
+  $('#toggleCompressButton').on('click', function () {
+    var stringValue = $('#stringValue').val();
+    if($('#stringValue').attr('compress') != 'yes') {
+      toggleOrigValue = stringValue;
+      $.ajax({
+        type: 'POST',
+        url: 'apiv2/uncompress',
+        data: {
+          text: stringValue
+        },
+        success: function (uncompressText) {
+          $('#stringValue').val(JSON.stringify(uncompressText));
+          $('#stringValue').attr('compress', 'yes');
+        }
+      });
+    } else {
+      $('#stringValue').attr('compress', 'no');
+      $('#stringValue').val(toggleOrigValue);
+    }
   });
 </script>
